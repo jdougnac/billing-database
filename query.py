@@ -28,8 +28,7 @@ def selectWhere(parameters, table, where, amount):
 
 
 def insert( table, columns, values):
-    request="INSERT INTO " +table+" ("+columns+") VALUES "+values+";"
-    print(request)
+    request="INSERT INTO " +table+" ("+columns+") VALUES "+values+";"    
     cursor=db.cursor()
     cursor.execute(request)    
     db.commit()
@@ -67,6 +66,7 @@ def createInvoice(storeID,customerID,date,productInfo):
             else:
                 raise Exception('Product details must be positive integers.')
         db.commit()
+        print('Invoice Sucessfully Created')
     except mysql.Error as error:
         print("Failed inserting record into table {}".format(error))
         db.rollback()
@@ -84,14 +84,11 @@ def deleteInvoice(invoiceID):
         #should become available again
         for item in results:
             temp=int(item[0])            
-            tempRequest='SELECT amount_purchased FROM purchase_detail WHERE product_id='+str(temp)+' AND invoice_id='+str(invoiceID)
-            print('bb',tempRequest)
+            tempRequest='SELECT amount_purchased FROM purchase_detail WHERE product_id='+str(temp)+' AND invoice_id='+str(invoiceID)          
             cursor=db.cursor()
             cursor.execute(tempRequest)
-            tempResults=cursor.fetchall()
-            print('aaaa',int(tempResults[0][0]))
-            updateStockRequest='UPDATE product SET available_stock = available_stock +' +str(tempResults[0][0])+ ' WHERE product_id='+' '+str(temp)
-            print('cc',updateStockRequest)
+            tempResults=cursor.fetchall()            
+            updateStockRequest='UPDATE product SET available_stock = available_stock +' +str(tempResults[0][0])+ ' WHERE product_id='+' '+str(temp)            
             cursor=db.cursor()
             cursor.execute(updateStockRequest)     
         deleteRequest='DELETE FROM invoice WHERE invoice_id=' + str(invoiceID)
@@ -103,3 +100,4 @@ def deleteInvoice(invoiceID):
         db.rollback()    
 
    
+deleteInvoice(49)
